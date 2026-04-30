@@ -1,0 +1,36 @@
+﻿<Window x:Class="AutoSellerUltra.Login.LoginUser"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AutoSellerUltra.Login"
+        mc:Ignorable="d"
+        Title="Login" Height="320" Width="420"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Login" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Email" Margin="0,0,0,5"/>
+            <TextBox x:Name="EmailTextBox" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <TextBlock Text="Password" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="PasswordBox" Height="30"/>
+        </StackPanel>
+
+        <Button Grid.Row="3"
+                Content="Login"
+                Height="35"
+                HorizontalAlignment="Stretch"
+                Click="LoginButton_Click"/>
+    </Grid>
+</Window>

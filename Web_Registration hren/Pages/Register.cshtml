@@ -1,0 +1,52 @@
+﻿@page
+@model Web_Registration.Pages.RegisterModel
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body { font-family: Arial; max-width: 520px; margin: 40px auto; }
+        label { display:block; margin-top: 12px; }
+        input { width: 100%; padding: 8px; margin-top: 6px; box-sizing: border-box; }
+        button { margin-top: 16px; padding: 10px 14px; }
+        .msg { margin-top: 16px; padding: 10px; border-radius: 6px; }
+        .ok { background: #e9f7ef; }
+        .bad { background: #fdecea; }
+        small { color:#666; }
+    </style>
+</head>
+<body>
+    <h2>Регистрация</h2>
+    <small>Дата рождения в формате dd.MM.yyyy</small>
+
+    <form method="post">
+        <label>Username</label>
+        <input asp-for="Login" />
+
+        <label>Email</label>
+        <input asp-for="Email" />
+
+        <label>Password</label>
+        <input asp-for="Password" type="password" />
+
+        <label>Birth date</label>
+        <input asp-for="DateOfBirth" placeholder="31.12.2000" />
+
+        <button type="submit">Register</button>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Message))
+    {
+        <div class="msg @(Model.Success ? "ok" : "bad")">
+            @Model.Message
+        </div>
+    }
+
+</body>
+</html>

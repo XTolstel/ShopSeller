@@ -1,0 +1,362 @@
+﻿<Window x:Class="AutoSellerUltra.AutoWindow.SelectAutoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:AutoSellerUltra.AutoWindow"
+        xmlns:write="clr-namespace:Write"
+        
+        Title="Car Shop"
+        WindowStartupLocation="CenterScreen"
+        Width="1200"
+        Height="700">
+        <!-- ВОТ СЮДА -->
+        <Window.Resources>
+            <local:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
+
+            <local:CartQtyMultiConverter x:Key="CartQtyMultiConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Верхняя полоса, пока пустая -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <!-- top bar -->
+            <RowDefinition Height="*" />
+            <!-- main content -->
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top">
+
+            <!-- Balance -->
+            <StackPanel x:Name="BalancePanel"
+                Orientation="Horizontal"
+                Margin="0,0,12,0"
+                Visibility="Collapsed">
+
+                <Button x:Name="UsePromoCodeButton"
+                Content="Use promo code"
+                Height="26"
+                Margin="0,0,8,0"
+                Padding="10,0"
+                Click="UsePromoCodeButton_Click"/>
+
+                <TextBlock Text="Balance:"
+                   VerticalAlignment="Center"
+                   FontWeight="SemiBold"
+                   Margin="0,0,6,0"/>
+
+                <TextBlock x:Name="BalanceText"
+                   VerticalAlignment="Center"
+                   Margin="0,0,8,0"/>
+
+                <Button x:Name="UsePromoCodeButton"
+                Content="Use promo code"
+                Height="26"
+                Margin="0,0,8,0"
+                Padding="10,0"
+                Click="UsePromoCodeButton_Click"/>
+
+                <Button x:Name="AddBalanceButton"
+                Content="+"
+                Width="26"
+                Height="26"
+                Padding="0"
+                Click="AddBalanceButton_Click"/>
+            </StackPanel>
+
+            <!-- Profile -->
+            <Button x:Name="UserProfileButton"
+            Visibility="Collapsed"
+            Click="UserProfileButton_Click"
+            Padding="8"
+            Margin="0,0,8,0">
+                <StackPanel Orientation="Horizontal">
+                    <Grid Width="26" Height="26" Margin="0,0,8,0">
+                        <Ellipse Fill="#2B2B2B"/>
+                        <TextBlock Text="👤"
+                           Foreground="White"
+                           FontSize="14"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <TextBlock x:Name="UserLoginText"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Log out -->
+            <Button x:Name="LogoutButton"
+            Content="Log out"
+            FontSize="12"
+            Width="80"
+            Height="28"
+            Visibility="Collapsed"
+            Click="LogoutButton_Click"/>
+
+            <!-- Auth (если не залогинен) -->
+            <StackPanel x:Name="AuthPanel"
+                Orientation="Horizontal">
+                <Button Content="Login"
+                Width="100"
+                Margin="0,0,10,0"
+                Click="Login_Click"/>
+
+                <Button Content="Register"
+                Width="100"
+                Click="Register_Click"/>
+            </StackPanel>
+
+        </StackPanel>
+
+
+        <!-- Кнопка обновления -->
+        <Button x:Name="RefreshButton"
+        Width="36"
+        Height="36"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Margin="10"
+        Click="RefreshButton_Click"
+        ToolTip="Обновить"
+        Background="#E0E0E0"
+        BorderBrush="#A0A0A0"
+        BorderThickness="1">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="bd"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="18">
+                        <TextBlock Text="⟳"
+                           FontSize="18"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <!-- Наведение -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="Background" Value="#D5D5D5"/>
+                        </Trigger>
+
+                        <!-- Нажатие -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="bd" Property="Background" Value="#BFBFBF"/>
+                            <Setter TargetName="bd" Property="BorderBrush" Value="#808080"/>
+                        </Trigger>
+
+                        <!-- Недоступна -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+        <!-- Основная зона: 3 колонки -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" />
+                <!-- left: categories -->
+                <ColumnDefinition Width="*" />
+                <!-- center: cars -->
+                <ColumnDefinition Width="320" />
+                <!-- right: cart -->
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: car categories -->
+            <Border Grid.Column="0"
+            BorderBrush="Black"
+            BorderThickness="0,0,1,0"
+            Padding="8">
+                <StackPanel>
+
+                    <!-- Кнопка над словом Categories -->
+                    <Button Content="Add to the list"
+                Margin="0,0,0,8"
+                Height="30"
+                Background="White"
+                FontWeight="Bold" 
+                Click="AddToListButton_Click"/>
+
+                    <TextBlock Text="Categories"
+                   FontWeight="Bold"
+                   Margin="0,0,0,8" />
+
+                    <ListBox x:Name="CategoriesListBox"
+                 SelectionMode="Single"
+                 SelectionChanged="CategoriesListBox_OnSelectionChanged" />
+
+                </StackPanel>
+
+                
+            </Border>
+
+            <!-- CENTER: all cars -->
+            <Border Grid.Column="1"
+                  BorderBrush="Black"
+                  BorderThickness="0,0,1,0"
+                  Padding="8">    
+
+                <DockPanel LastChildFill="True">
+
+                    <TextBlock DockPanel.Dock="Top"
+                           Text="Available cars"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="CarsItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type write:Auto}">
+                            <Button Click="AutoButton_Click"
+                            Padding="0"
+                            BorderThickness="0"
+                            Background="Transparent">
+                <Border Margin="4"
+                        Padding="6"
+                        Width="180"
+                        Height="220"
+                        BorderBrush="Gray"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                            <StackPanel>
+                                  <Image Height="110"
+                                         Source="{Binding ImageBytes, Converter={StaticResource ByteArrayToImageConverter}}"
+                                         Stretch="UniformToFill"/>
+
+                                  <TextBlock Text="{Binding Name}"
+                                     FontWeight="Bold"
+                                     Margin="0,8,0,0"/>
+
+                                  <TextBlock Text="{Binding Category}"
+                                      Opacity="0.7"/>
+
+                                  <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}"
+                                      Margin="0,4,0,0"/>
+
+                                  <!-- 🔹 КОЛИЧЕСТВО -->
+                                  <TextBlock Text="{Binding Quantity, StringFormat=In stock: {0}}"
+                                         Margin="0,4,0,0"
+                                         FontSize="12"
+                                         Foreground="DarkGreen"/>
+                             </StackPanel>
+
+                </Border>
+                </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                </DockPanel>
+            </Border>
+
+
+            <!-- ПРАВАЯ ЧАСТЬ: корзина -->
+            <Border Grid.Column="2"
+            BorderBrush="Black"
+            BorderThickness="0"
+            Padding="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <!-- cart items -->
+                        <RowDefinition Height="Auto" />
+                        <!-- buttons -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Список товаров в корзине -->
+                    <DockPanel Grid.Row="0">
+                        <TextBlock DockPanel.Dock="Top"
+                           Text="Cart"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8" />
+
+                        <ListBox x:Name="CartListBox">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type write:Auto}">
+                                    <Border Padding="6" Margin="0,0,0,6" BorderBrush="#DDD" BorderThickness="1" CornerRadius="6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="54"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0"
+                                                  Width="48" Height="48"
+                                                  Stretch="UniformToFill"
+                                                  Source="{Binding ImageBytes, Converter={StaticResource ByteArrayToImageConverter}}"/>
+
+                                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                                <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}" FontSize="12" Opacity="0.8"/>
+
+                                                <TextBlock FontSize="12">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{StaticResource CartQtyMultiConverter}">
+                                                            <!-- 1) Id текущей машины -->
+                                                            <Binding Path="Id"/>
+
+                                                            <!-- 2) CartCounts из окна -->
+                                                            <Binding Path="CartCounts"
+                                                                 RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="2"
+                                                Content="X"
+                                                Width="26" Height="26"
+                                                Margin="8,0,0,0"
+                                                Click="RemoveFromCart_Click"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+
+                    </DockPanel>
+
+                    <!-- Кнопки внизу корзины -->
+                    <StackPanel Grid.Row="1"
+                        Margin="0,8,0,0">
+                        <TextBlock x:Name="TotalTextBlock"
+                           Text="Total: $0"
+                           Margin="0,0,0,6"
+                           FontWeight="Bold" />
+
+                        <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                            <Button Content="Clear cart"
+                            Width="90"
+                            Margin="0,0,8,0"
+                            Click="ClearCart_Click"/>
+
+                            <Button Content="Buy"
+                            Width="90"
+                            Background="#FF2D8C2D"
+                            Foreground="White"
+                            Click="Buy_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
