@@ -221,9 +221,9 @@ namespace Write
                         if (!reader.Read())
                             return "User not found.";
 
-                        bool isEmailConfirmed = reader.GetBoolean("IsEmailConfirmed");
-                        if (!isEmailConfirmed)
-                            return "Email is not verified for ShopSeller.";
+                        int isEmailConfirmed = Convert.ToInt32(reader["IsEmailConfirmed"]);
+                        if (isEmailConfirmed != 1)
+                            return "Email is not verified for ShopSeller";
 
                         var dbPassword = reader.GetString("Password");
 
