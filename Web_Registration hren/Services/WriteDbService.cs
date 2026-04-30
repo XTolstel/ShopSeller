@@ -18,7 +18,8 @@ namespace Web_Registration.Services;
             bool ok =
                 !result.Contains("not found", StringComparison.OrdinalIgnoreCase) &&
                 !result.Contains("Invalid", StringComparison.OrdinalIgnoreCase) &&
-                !result.Contains("error", StringComparison.OrdinalIgnoreCase);
+                !result.Contains("error", StringComparison.OrdinalIgnoreCase) &&
+                !result.Contains("not verified", StringComparison.OrdinalIgnoreCase);
         var user = Write.WriteDB.GetUserByEmail(email);
         if (!ok)
         {
@@ -28,7 +29,7 @@ namespace Web_Registration.Services;
         {
             Success = ok,
             Message = result,
-            user = new UserDto
+            user = user == null ? null : new UserDto
             {
                 Id = user.Id,
                 Login = user.Login,
