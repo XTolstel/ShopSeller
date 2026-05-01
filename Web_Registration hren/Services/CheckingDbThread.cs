@@ -11,4 +11,6 @@ public class CheckingDbThread : IHostedService
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+
 }

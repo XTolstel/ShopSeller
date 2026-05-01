@@ -13,7 +13,7 @@ namespace ShopSellerUltra
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            WriteDBPromo.Start_Promo();
+            WriteDBPromo.StartPromo();
         }
     }
 

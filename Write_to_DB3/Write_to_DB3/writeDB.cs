@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
 //using System.Data.SqlClient;
 //using Microsoft.Data.SqlClient;
@@ -140,7 +141,7 @@ namespace Write
             });
         }
 
-        public static void Start_Promo()
+        public static void StartPromo()
         {
             Task.Run(async () =>
             {
@@ -149,7 +150,6 @@ namespace Write
                     try
                     {
                         connectionString = GetConnectionString();
-
                         using (var conn = new MySqlConnection(connectionString))
                         {
                             await conn.OpenAsync();

@@ -9,7 +9,7 @@ namespace Write
     {
         static string connectionString;
 
-        public static void Start_Promo()
+        public static void StartPromo()
         {
             Task.Run(async () =>
             {
