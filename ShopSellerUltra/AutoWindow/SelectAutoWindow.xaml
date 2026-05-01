@@ -153,14 +153,14 @@
                 </ControlTemplate>
             </Button.Template>
         </Button>
-        <Button x:Name="UsePromoCodeButton"
+        <Button x:Name="AddPromoCodeButton"
         Content="+ Promo code"
         Height="36"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
         Margin="56,10,0,0"
         Padding="12,0"
-        Click="UsePromoCodeButton_Click"
+        Click="AddPromoCodeButton_Click"
         ToolTip="Add promo code"
         Background="#E0E0E0"
         BorderBrush="#A0A0A0"

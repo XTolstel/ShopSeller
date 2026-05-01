@@ -259,6 +259,7 @@ namespace AutoSellerUltra.AutoWindow
         }
 
         // Общий обработчик клика по карточке авто (кнопке)
+
         private void AutoButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement fe && fe.DataContext is Auto auto)
