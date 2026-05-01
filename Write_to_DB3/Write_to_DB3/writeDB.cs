@@ -107,6 +107,8 @@ namespace Write
                 {
                     try
                     {
+                        connectionString = GetConnectionString();
+
                         using (var conn = new MySqlConnection(connectionString))
                         {
                             await conn.OpenAsync();
