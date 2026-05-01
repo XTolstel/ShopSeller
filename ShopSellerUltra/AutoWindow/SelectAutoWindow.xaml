@@ -154,7 +154,7 @@
             </Button.Template>
         </Button>
         <Button x:Name="AddPromoCodeButton"
-        Content="+ Promo code"
+        Content="Add Promo code"
         Height="36"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
