@@ -16,22 +16,22 @@
 
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="Promo code name" Margin="0,0,0,4"/>
-            <TextBox Height="30" Text="SPRING-SALE"/>
+            <TextBox Height="30" Text=""/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="0,0,0,12">
             <TextBlock Text="Discount" Margin="0,0,0,4"/>
-            <TextBox Height="30" Text="15%"/>
+            <TextBox Height="30" Text=""/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Margin="0,0,0,12">
             <TextBlock Text="Expiration date" Margin="0,0,0,4"/>
-            <DatePicker Height="30" SelectedDate="2026-12-31"/>
+            <DatePicker Height="30" SelectedDate=""/>
         </StackPanel>
 
         <StackPanel Grid.Row="3">
             <TextBlock Text="Developer password" Margin="0,0,0,4"/>
-            <TextBox Height="30" Text="dev-password-123"/>
+            <TextBox Height="30" Text=""/>
         </StackPanel>
     </Grid>
 </Window>
