@@ -72,6 +72,33 @@ namespace Write
             });
         }
 
+
+        public static async Task<int> DeleteUsedPromo(int[] promoIds)
+        {
+            connectionString = WriteDB.GetConnectionString();
+            int deletedRows = 0;
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                foreach (int promoId in promoIds)
+                {
+                    string sql = @"
+                        DELETE FROM Used_Promocodes
+                        WHERE promocode_id = @promoId";
+
+                    using (var cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@promoId", promoId);
+                        deletedRows += await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+
+            return deletedRows;
+        }
+
         private static void SaveExpiredPromocodeIds(int[] expiredIds)
         {
             if (expiredIds == null || expiredIds.Length == 0)
