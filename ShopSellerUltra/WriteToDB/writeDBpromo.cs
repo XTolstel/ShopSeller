@@ -38,17 +38,12 @@ namespace Write
                                 {
                                     while (await reader.ReadAsync())
                                     {
-                                        //expiredIds.Add(reader.GetInt32("id"));
-                                        expiredIds.Add(Convert.ToInt32(reader["id"]));
+                                        expiredIds.Add(reader.GetInt32("id"));
                                     }
                                 }
                             }
 
-                            
-
-                            if (expiredIds.Count > 0)
-                            {
-                                DeleteUsedPromo(expiredIds.ToArray());
+                            SaveExpiredPromocodeIds(expiredIds.ToArray());
 
                             if (expiredIds.Count > 0)
                             {
@@ -63,11 +58,6 @@ namespace Write
 
                                     int rowsAffected = await deleteCmd.ExecuteNonQueryAsync();
                                     Console.WriteLine($"Deleted {rowsAffected} expired promocodes at {DateTime.Now}");
-
-                                    
-
-                                }
-
                                 }
                             }
                         }
@@ -81,6 +71,8 @@ namespace Write
                 }
             });
         }
+
+
         public static async Task<int> DeleteUsedPromo(int[] promoIds)
         {
             connectionString = WriteDB.GetConnectionString();
@@ -105,6 +97,14 @@ namespace Write
             }
 
             return deletedRows;
+        }
+
+        private static void SaveExpiredPromocodeIds(int[] expiredIds)
+        {
+            if (expiredIds == null || expiredIds.Length == 0)
+                return;
+
+            Console.WriteLine($"Expired promocode ids: {string.Join(", ", expiredIds)}");
         }
 
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
