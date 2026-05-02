@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Extensions.Configuration;
 //using System.Data.SqlClient;
 //using Microsoft.Data.SqlClient;
@@ -107,6 +108,8 @@ namespace Write
                 {
                     try
                     {
+                        connectionString = GetConnectionString();
+
                         using (var conn = new MySqlConnection(connectionString))
                         {
                             await conn.OpenAsync();
@@ -133,6 +136,44 @@ namespace Write
                     }
 
                     // Ждём 20 секунд перед следующей проверкой
+                    await Task.Delay(20000);
+                }
+            });
+        }
+
+        public static void StartPromo()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        connectionString = GetConnectionString();
+                        using (var conn = new MySqlConnection(connectionString))
+                        {
+                            await conn.OpenAsync();
+
+                            string sql = @"
+                                DELETE FROM Promocodes
+                                WHERE expiration_date IS NOT NULL
+                                AND expiration_date < @now";
+
+                            using (var cmd = new MySqlCommand(sql, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@now", DateTime.Now);
+
+                                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                                if (rowsAffected > 0)
+                                    Console.WriteLine($"Deleted {rowsAffected} expired promocodes at {DateTime.Now}");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error in ExpiredPromocodeCleaner: {ex.Message}");
+                    }
+
                     await Task.Delay(20000);
                 }
             });
@@ -221,9 +262,9 @@ namespace Write
                         if (!reader.Read())
                             return "User not found.";
 
-                        bool isEmailConfirmed = reader.GetBoolean("IsEmailConfirmed");
-                        if (!isEmailConfirmed)
-                            return "Email is not verified for ShopSeller.";
+                        int isEmailConfirmed = Convert.ToInt32(reader["IsEmailConfirmed"]);
+                        if (isEmailConfirmed != 1)
+                            return "Email is not verified for ShopSeller";
 
                         var dbPassword = reader.GetString("Password");
 

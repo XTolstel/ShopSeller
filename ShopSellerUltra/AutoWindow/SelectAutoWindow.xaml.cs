@@ -84,11 +84,25 @@ namespace AutoSellerUltra.AutoWindow
         }
 
 
-
-
         private void UsePromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Promo code feature is coming soon.", "Use promo code", MessageBoxButton.OK, MessageBoxImage.Information);
+            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow
+            {
+                Owner = this
+            };
+
+            UsePromoCodeWindow.ShowDialog();
+        }
+
+
+        private void AddPromoCodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var promoCodeWindow = new AutoSellerUltra.PromoCodeWindow.PromoCodeWindow
+            {
+                Owner = this
+            };
+
+            promoCodeWindow.ShowDialog();
         }
 
         private void AddBalanceButton_Click(object sender, RoutedEventArgs e)
@@ -259,6 +273,7 @@ namespace AutoSellerUltra.AutoWindow
         }
 
         // Общий обработчик клика по карточке авто (кнопке)
+
         private void AutoButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement fe && fe.DataContext is Auto auto)
