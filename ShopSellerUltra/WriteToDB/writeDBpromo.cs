@@ -23,18 +23,42 @@ namespace Write
                         {
                             await conn.OpenAsync();
 
-                            string sql = @"
-                                DELETE FROM Promocodes
+                            string selectIdsSql = @"
+                                SELECT id
+                                FROM Promocodes
                                 WHERE expiration_date IS NOT NULL
                                 AND expiration_date < @now";
 
-                            using (var cmd = new MySqlCommand(sql, conn))
+                            var expiredIds = new System.Collections.Generic.List<int>();
+                            using (var selectCmd = new MySqlCommand(selectIdsSql, conn))
                             {
-                                cmd.Parameters.AddWithValue("@now", DateTime.Now);
+                                selectCmd.Parameters.AddWithValue("@now", DateTime.Now);
 
-                                int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                                if (rowsAffected > 0)
+                                using (var reader = await selectCmd.ExecuteReaderAsync())
+                                {
+                                    while (await reader.ReadAsync())
+                                    {
+                                        expiredIds.Add(reader.GetInt32("id"));
+                                    }
+                                }
+                            }
+
+                            SaveExpiredPromocodeIds(expiredIds.ToArray());
+
+                            if (expiredIds.Count > 0)
+                            {
+                                string deleteSql = @"
+                                    DELETE FROM Promocodes
+                                    WHERE expiration_date IS NOT NULL
+                                    AND expiration_date < @now";
+
+                                using (var deleteCmd = new MySqlCommand(deleteSql, conn))
+                                {
+                                    deleteCmd.Parameters.AddWithValue("@now", DateTime.Now);
+
+                                    int rowsAffected = await deleteCmd.ExecuteNonQueryAsync();
                                     Console.WriteLine($"Deleted {rowsAffected} expired promocodes at {DateTime.Now}");
+                                }
                             }
                         }
                     }
@@ -46,6 +70,14 @@ namespace Write
                     await Task.Delay(20000);
                 }
             });
+        }
+
+        private static void SaveExpiredPromocodeIds(int[] expiredIds)
+        {
+            if (expiredIds == null || expiredIds.Length == 0)
+                return;
+
+            Console.WriteLine($"Expired promocode ids: {string.Join(", ", expiredIds)}");
         }
 
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
