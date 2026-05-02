@@ -35,6 +35,7 @@ namespace Write
                                 int rowsAffected = await cmd.ExecuteNonQueryAsync();
                                 if (rowsAffected > 0)
                                     Console.WriteLine($"Deleted {rowsAffected} expired promocodes at {DateTime.Now}");
+                                    
                             }
                         }
                     }
