@@ -49,6 +49,9 @@ namespace Write
                             if (expiredIds.Count > 0)
                             {
                                 DeleteUsedPromo(expiredIds.ToArray());
+
+                            if (expiredIds.Count > 0)
+                            {
                                 string deleteSql = @"
                                     DELETE FROM Promocodes
                                     WHERE expiration_date IS NOT NULL
@@ -65,6 +68,7 @@ namespace Write
 
                                 }
 
+                                }
                             }
                         }
                     }
@@ -77,13 +81,30 @@ namespace Write
                 }
             });
         }
-
-        private static void DeleteUsedPromo(int[] expiredIds)
+        public static async Task<int> DeleteUsedPromo(int[] promoIds)
         {
-            if (expiredIds == null || expiredIds.Length == 0)
-                return;
+            connectionString = WriteDB.GetConnectionString();
+            int deletedRows = 0;
 
-            Console.WriteLine($"Expired promocode ids: {string.Join(", ", expiredIds)}");
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                foreach (int promoId in promoIds)
+                {
+                    string sql = @"
+                        DELETE FROM Used_Promocodes
+                        WHERE promocode_id = @promoId";
+
+                    using (var cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@promoId", promoId);
+                        deletedRows += await cmd.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+
+            return deletedRows;
         }
 
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
