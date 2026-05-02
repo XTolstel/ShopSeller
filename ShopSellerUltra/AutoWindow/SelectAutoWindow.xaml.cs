@@ -86,7 +86,12 @@ namespace AutoSellerUltra.AutoWindow
 
         private void UsePromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Promo code feature is coming soon.", "Use promo code", MessageBoxButton.OK, MessageBoxImage.Information);
+            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow
+            {
+                Owner = this
+            };
+
+            UsePromoCodeWindow.ShowDialog();
         }
 
 
