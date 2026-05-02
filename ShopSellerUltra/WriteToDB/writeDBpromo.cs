@@ -38,15 +38,17 @@ namespace Write
                                 {
                                     while (await reader.ReadAsync())
                                     {
-                                        expiredIds.Add(reader.GetInt32("id"));
+                                        //expiredIds.Add(reader.GetInt32("id"));
+                                        expiredIds.Add(Convert.ToInt32(reader["id"]));
                                     }
                                 }
                             }
 
-                            SaveExpiredPromocodeIds(expiredIds.ToArray());
+                           
 
                             if (expiredIds.Count > 0)
-                            {
+                            { 
+                                DeleteUsedPromo(expiredIds.ToArray());
                                 string deleteSql = @"
                                     DELETE FROM Promocodes
                                     WHERE expiration_date IS NOT NULL
@@ -99,13 +101,6 @@ namespace Write
             return deletedRows;
         }
 
-        private static void SaveExpiredPromocodeIds(int[] expiredIds)
-        {
-            if (expiredIds == null || expiredIds.Length == 0)
-                return;
-
-            Console.WriteLine($"Expired promocode ids: {string.Join(", ", expiredIds)}");
-        }
 
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
         {
