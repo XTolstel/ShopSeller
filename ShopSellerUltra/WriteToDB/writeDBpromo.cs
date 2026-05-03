@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
 using MySql.Data.MySqlClient;
@@ -73,7 +74,65 @@ namespace Write
                 }
             });
         }
+        
 
+        public static async Task<(bool IsValid, string State, int Discount, string Message)> CheckPromocodeAsync(string promoCode)
+        {
+            string sql = @"
+                SELECT 
+                    id,
+                    code,
+                    discount,
+                    expiration_date
+                FROM Promocodes
+                WHERE code = @code
+                LIMIT 1;
+                ";
+            connectionString = WriteDB.GetConnectionString();
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@code", promoCode);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!await reader.ReadAsync())
+                        {
+                            return (
+                                false,
+                                "Invalid",
+                                0,
+                                "The promocode is invalid: this promocode does not exist."
+                            );
+                        }
+
+                        int discount = reader.GetInt32("discount");
+                        DateTime expirationDate = reader.GetDateTime("expiration_date");
+
+                        if (expirationDate < DateTime.Now)
+                        {
+                            return (
+                                false,
+                                "Invalid",
+                                discount,
+                                "The promocode is invalid: it has expired."
+                            );
+                        }
+
+                        return (
+                            true,
+                            "Valid",
+                            discount,
+                            "The promocode is valid."
+                        );
+                    }
+                }
+            }
+        }
 
         public static async Task<int> DeleteUsedPromo(int[] promoIds)
         {
@@ -100,8 +159,6 @@ namespace Write
 
             return deletedRows;
         }
-
-
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
         {
             connectionString = WriteDB.GetConnectionString();
@@ -138,5 +195,8 @@ namespace Write
                 }
             }
         }
+        
+
+        
     }
 }

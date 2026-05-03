@@ -1,6 +1,10 @@
+using System;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using Write;
 
-namespace AutoSellerUltra
+namespace AutoSellerUltra.UsePromoCodeWindow
 {
     public partial class UsePromoCodeWindow : Window
     {
@@ -11,21 +15,43 @@ namespace AutoSellerUltra
             InitializeComponent();
         }
 
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
+        private async void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             string promoCode = PromoCodeTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(promoCode))
             {
-                ErrorTextBlock.Text = "Write promocode.";
-                ErrorTextBlock.Visibility = Visibility.Visible;
+                MessageBox.Show("Please enter a promocode.");
                 return;
             }
 
-            PromoCode = promoCode;
+            try
+            {
+                var result = await Write.WriteDBPromo.CheckPromocodeAsync(promoCode);
 
-            DialogResult = true;
-            Close();
+                if (result.IsValid)
+                {
+                    MessageBox.Show(
+                        $"Promocode status: {result.State}\n" +
+                        $"Discount: {result.Discount}%"
+                    );
+
+                    // Here you can apply the discount later
+                    // ApplyDiscount(result.Discount);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"{result.Message}\n" +
+                        $"Status: {result.State}\n" +
+                        $"Discount: {result.Discount}%"
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while checking the promocode: " + ex.Message);
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

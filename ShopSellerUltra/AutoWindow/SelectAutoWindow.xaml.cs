@@ -86,7 +86,7 @@ namespace AutoSellerUltra.AutoWindow
 
         private void UsePromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
-            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow
+            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow.UsePromoCodeWindow
             {
                 Owner = this
             };
