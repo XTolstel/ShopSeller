@@ -22,6 +22,8 @@ namespace Write
         public string Category { get; set; }
 
         public int Price { get; set; }
+
+        //public int New_Price { get; set; }
         public int Quantity { get; set; }
 
         public byte[]? ImageBytes { get; set; }
