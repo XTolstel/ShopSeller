@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using Write;
+using AutoSellerUltra.Login;
 
 namespace AutoSellerUltra.UsePromoCodeWindow
 {
@@ -36,8 +37,9 @@ namespace AutoSellerUltra.UsePromoCodeWindow
                         $"Discount: {result.Discount}%"
                     );
 
-                    // Here you can apply the discount later
-                    // ApplyDiscount(result.Discount);
+                    UserSession.SetPromoDiscount(result.Discount);
+                    DialogResult = true;
+                    Close();
                 }
                 else
                 {

@@ -91,7 +91,12 @@ namespace AutoSellerUltra.AutoWindow
                 Owner = this
             };
 
-            UsePromoCodeWindow.ShowDialog();
+            bool? result = UsePromoCodeWindow.ShowDialog();
+
+            if (result == true)
+            {
+                OnPromoCodeChanged();
+            }
         }
 
 
@@ -207,6 +212,11 @@ namespace AutoSellerUltra.AutoWindow
 
             TotalTextBlock.Text = $"Total: ${total}";
             return total;
+        }
+
+
+        private void OnPromoCodeChanged()
+        {
         }
 
         private void RemoveFromCart_Click(object sender, RoutedEventArgs e)
