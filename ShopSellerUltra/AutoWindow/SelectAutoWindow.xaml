@@ -251,8 +251,35 @@
                                   <TextBlock Text="{Binding Category}"
                                       Opacity="0.7"/>
 
-                                  <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}"
-                                      Margin="0,4,0,0"/>
+                                  <StackPanel Margin="0,4,0,0">
+                                      <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}">
+                                          <TextBlock.Style>
+                                              <Style TargetType="TextBlock">
+                                                  <Setter Property="TextDecorations" Value="{x:Null}"/>
+                                                  <Style.Triggers>
+                                                      <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                          <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                          <Setter Property="Opacity" Value="0.7"/>
+                                                      </DataTrigger>
+                                                  </Style.Triggers>
+                                              </Style>
+                                          </TextBlock.Style>
+                                      </TextBlock>
+                                      <TextBlock Text="{Binding NewPrice, StringFormat=Now: {0} $}"
+                                                 Foreground="DarkRed"
+                                                 FontWeight="Bold">
+                                          <TextBlock.Style>
+                                              <Style TargetType="TextBlock">
+                                                  <Setter Property="Visibility" Value="Collapsed"/>
+                                                  <Style.Triggers>
+                                                      <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                          <Setter Property="Visibility" Value="Visible"/>
+                                                      </DataTrigger>
+                                                  </Style.Triggers>
+                                              </Style>
+                                          </TextBlock.Style>
+                                      </TextBlock>
+                                  </StackPanel>
 
                                   <!-- 🔹 КОЛИЧЕСТВО -->
                                   <TextBlock Text="{Binding Quantity, StringFormat=In stock: {0}}"
@@ -311,7 +338,35 @@
 
                                             <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}" FontSize="12" Opacity="0.8"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}" FontSize="12" Opacity="0.8">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="TextDecorations" Value="{x:Null}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                    <TextBlock Text="{Binding NewPrice, StringFormat=  {0} $}"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="DarkRed">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
 
                                                 <TextBlock FontSize="12">
                                                     <TextBlock.Text>
