@@ -99,6 +99,11 @@ namespace AutoSellerUltra.AutoWindow
             }
         }
 
+        private void OnPromoCodeChanged()
+        {
+
+
+        }
 
         private void AddPromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -215,9 +220,7 @@ namespace AutoSellerUltra.AutoWindow
         }
 
 
-        private void OnPromoCodeChanged()
-        {
-        }
+        
 
         private void RemoveFromCart_Click(object sender, RoutedEventArgs e)
         {
