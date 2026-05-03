@@ -53,6 +53,7 @@ namespace AutoSellerUltra.AutoWindow
 
 
             _allCars = WriteDB.LoadCarsFromDb();
+            ApplyPromoToPrices();
 
             CarsItemsControl.ItemsSource = _allCars;
 
@@ -101,8 +102,10 @@ namespace AutoSellerUltra.AutoWindow
 
         private void OnPromoCodeChanged()
         {
-
-
+            ApplyPromoToPrices();
+            CarsItemsControl.Items.Refresh();
+            CartListBox.Items.Refresh();
+            UpdateTotal();
         }
 
         private void AddPromoCodeButton_Click(object sender, RoutedEventArgs e)
@@ -184,7 +187,7 @@ namespace AutoSellerUltra.AutoWindow
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             _allCars = WriteDB.LoadCarsFromDb();
-         
+            ApplyPromoToPrices();
             CarsItemsControl.ItemsSource = _allCars;
         }
 
@@ -212,11 +215,32 @@ namespace AutoSellerUltra.AutoWindow
 
         private int UpdateTotal()
         {
-            // Если Price у тебя int:
-            var total = Cart_cars.Sum(a => a.Price*CartCounts[a.Id]);
+            var total = Cart_cars.Sum(a => GetEffectivePrice(a) * CartCounts[a.Id]);
 
             TotalTextBlock.Text = $"Total: ${total}";
             return total;
+        }
+
+        private static int GetEffectivePrice(Auto auto)
+        {
+            return auto.NewPrice ?? auto.Price;
+        }
+
+        private static void ApplyPromoToPrices()
+        {
+            int discount = UserSession.CurrentUser?.PromoDiscount ?? 0;
+            foreach (var car in _allCars)
+            {
+                if (discount > 0)
+                {
+                    int discountedPrice = car.Price - (car.Price * discount / 100);
+                    car.NewPrice = discountedPrice;
+                }
+                else
+                {
+                    car.NewPrice = null;
+                }
+            }
         }
 
 
