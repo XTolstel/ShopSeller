@@ -97,7 +97,7 @@ namespace AutoSellerUltra.AutoWindow
             if (result == true)
             {
                 OnPromoCodeChanged();
-                UserSession.SetPromoDiscount(0, null);
+                
             }
         }
 
@@ -107,7 +107,7 @@ namespace AutoSellerUltra.AutoWindow
             CarsItemsControl.Items.Refresh();
             CartListBox.Items.Refresh();
             UpdateTotal();
-           
+            
         }
 
         private static int GetEffectivePrice(Auto auto)
@@ -310,6 +310,13 @@ namespace AutoSellerUltra.AutoWindow
             CartCounts.Clear();
             CartListBox.Items.Refresh(); // 👈 обновляем UI
             UpdateTotal();
+            
+
+            if (UserSession.CurrentUser.PromoDiscount != 0 && !string.IsNullOrWhiteSpace(UserSession.CurrentUser.Promocode))
+            {
+                Write.WriteDBPromo.SaveUsedPromocodeAsync(UserSession.CurrentUser.Id,UserSession.CurrentUser.Promocode);
+                UserSession.SetPromoDiscount(0, null);
+            }
             RefreshButton_Click(null, null);
             //MessageBox.Show("Your buy is successfully complete");
         }

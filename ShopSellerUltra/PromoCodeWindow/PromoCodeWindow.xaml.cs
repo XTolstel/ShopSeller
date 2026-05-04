@@ -15,11 +15,11 @@ namespace AutoSellerUltra.PromoCodeWindow
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            //string promoCode = PromoCodeTextBox.Text.Trim();
+            string promoCode = PromoCodeTextBox.Text.Trim();
             string discountText = DiscountTextBox.Text.Trim();
             string dayText = DayTextBox.Text.Trim();
             string developerPassword = DeveloperPasswordBox.Password;
-            string promoCode = "ALLHAILLELOUCH"+ PromoCodeTextBox.Text.Trim();
+            //string promoCode = "ALLHAILLELOUCH"+ PromoCodeTextBox.Text.Trim();
             
 
             if (string.IsNullOrWhiteSpace(promoCode) || string.IsNullOrWhiteSpace(discountText) || string.IsNullOrWhiteSpace(dayText))
