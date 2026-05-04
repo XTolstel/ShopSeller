@@ -147,7 +147,7 @@ namespace Write
                 {
                     string sql = @"
                         DELETE FROM Used_Promocodes
-                        WHERE promocode_id = @promoId";
+                        WHERE promocode = (SELECT code FROM Promocodes WHERE id = @promoId LIMIT 1)";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
@@ -159,6 +159,33 @@ namespace Write
 
             return deletedRows;
         }
+
+        public static async Task SaveUsedPromocodeAsync(int userId, string promoCode)
+        {
+            if (userId <= 0 || string.IsNullOrWhiteSpace(promoCode))
+            {
+                return;
+            }
+
+            connectionString = WriteDB.GetConnectionString();
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                string sql = @"
+                    INSERT INTO Used_Promocodes (user_id, promocode)
+                    VALUES (@userId, @code);";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@code", promoCode);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
         {
             connectionString = WriteDB.GetConnectionString();
