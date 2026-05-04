@@ -339,7 +339,7 @@
                                             <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Price, StringFormat=Price: {0} $}" FontSize="12" Opacity="0.8">
+                                                    <TextBlock Text="{Binding Price, StringFormat=Price: {}${0}}" FontSize="12" Opacity="0.8">
                                                         <TextBlock.Style>
                                                             <Style TargetType="TextBlock">
                                                                 <Setter Property="TextDecorations" Value="{x:Null}"/>
@@ -351,7 +351,7 @@
                                                             </Style>
                                                         </TextBlock.Style>
                                                     </TextBlock>
-                                                    <TextBlock Text="{Binding NewPrice, StringFormat=  {0} $}"
+                                                    <TextBlock Text="{Binding NewPrice, StringFormat={}${0}}"
                                                                FontSize="12"
                                                                FontWeight="Bold"
                                                                Foreground="DarkRed">

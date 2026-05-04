@@ -17,6 +17,8 @@ namespace AutoSellerUltra.Login
 
         public int spendbalance { get; set; }
 
+        public string Promocode { get; set; } = "";
+
         public int PromoDiscount { get; set; }
     }
 }

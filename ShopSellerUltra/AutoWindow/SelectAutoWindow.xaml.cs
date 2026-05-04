@@ -97,6 +97,7 @@ namespace AutoSellerUltra.AutoWindow
             if (result == true)
             {
                 OnPromoCodeChanged();
+                UserSession.SetPromoDiscount(0);
             }
         }
 
@@ -106,6 +107,29 @@ namespace AutoSellerUltra.AutoWindow
             CarsItemsControl.Items.Refresh();
             CartListBox.Items.Refresh();
             UpdateTotal();
+           
+        }
+
+        private static int GetEffectivePrice(Auto auto)
+        {
+            return auto.NewPrice ?? auto.Price;
+        }
+
+        private static void ApplyPromoToPrices()
+        {
+            int discount = UserSession.CurrentUser?.PromoDiscount ?? 0;
+            foreach (var car in _allCars)
+            {
+                if (discount > 0)
+                {
+                    int discountedPrice = car.Price - (car.Price * discount / 100);
+                    car.NewPrice = discountedPrice;
+                }
+                else
+                {
+                    car.NewPrice = null;
+                }
+            }
         }
 
         private void AddPromoCodeButton_Click(object sender, RoutedEventArgs e)
@@ -221,27 +245,7 @@ namespace AutoSellerUltra.AutoWindow
             return total;
         }
 
-        private static int GetEffectivePrice(Auto auto)
-        {
-            return auto.NewPrice ?? auto.Price;
-        }
-
-        private static void ApplyPromoToPrices()
-        {
-            int discount = UserSession.CurrentUser?.PromoDiscount ?? 0;
-            foreach (var car in _allCars)
-            {
-                if (discount > 0)
-                {
-                    int discountedPrice = car.Price - (car.Price * discount / 100);
-                    car.NewPrice = discountedPrice;
-                }
-                else
-                {
-                    car.NewPrice = null;
-                }
-            }
-        }
+        
 
 
         
@@ -306,6 +310,7 @@ namespace AutoSellerUltra.AutoWindow
             CartCounts.Clear();
             CartListBox.Items.Refresh(); // 👈 обновляем UI
             UpdateTotal();
+            RefreshButton_Click(null, null);
             //MessageBox.Show("Your buy is successfully complete");
         }
 
