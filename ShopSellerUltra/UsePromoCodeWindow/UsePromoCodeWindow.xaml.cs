@@ -28,7 +28,8 @@ namespace AutoSellerUltra.UsePromoCodeWindow
 
             try
             {
-                var result = await Write.WriteDBPromo.CheckPromocodeAsync(promoCode);
+                int userId = UserSession.CurrentUser?.Id ?? 0;
+                var result = await Write.WriteDBPromo.CheckPromocodeAsync(promoCode, userId);
 
                 if (result.IsValid)
                 {

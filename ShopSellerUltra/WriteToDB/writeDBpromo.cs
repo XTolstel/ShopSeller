@@ -76,8 +76,18 @@ namespace Write
         }
         
 
-        public static async Task<(bool IsValid, string State, int Discount, string Message)> CheckPromocodeAsync(string promoCode)
+        public static async Task<(bool IsValid, string State, int Discount, string Message)> CheckPromocodeAsync(string promoCode, int userId)
         {
+            if (userId <= 0)
+            {
+                return (
+                    false,
+                    "Invalid",
+                    0,
+                    "The promocode cannot be checked: invalid user."
+                );
+            }
+
             string sql = @"
                 SELECT 
                     id,
@@ -97,6 +107,8 @@ namespace Write
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@code", promoCode);
+                    int discount;
+                    DateTime expirationDate;
 
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
@@ -110,26 +122,49 @@ namespace Write
                             );
                         }
 
-                        int discount = reader.GetInt32("discount");
-                        DateTime expirationDate = reader.GetDateTime("expiration_date");
+                        discount = reader.GetInt32("discount");
+                        expirationDate = reader.GetDateTime("expiration_date");
+                    }
 
-                        if (expirationDate < DateTime.Now)
+                    if (expirationDate < DateTime.Now)
+                    {
+                        return (
+                            false,
+                            "Invalid",
+                            discount,
+                            "The promocode is invalid: it has expired."
+                        );
+                    }
+
+                    string usedPromoSql = @"
+                        SELECT 1
+                        FROM Used_Promocodes
+                        WHERE user_id = @userId AND promocode = @code
+                        LIMIT 1;";
+
+                    using (var usedPromoCmd = new MySqlCommand(usedPromoSql, conn))
+                    {
+                        usedPromoCmd.Parameters.AddWithValue("@userId", userId);
+                        usedPromoCmd.Parameters.AddWithValue("@code", promoCode);
+
+                        var usedPromoResult = await usedPromoCmd.ExecuteScalarAsync();
+                        if (usedPromoResult != null)
                         {
                             return (
                                 false,
-                                "Invalid",
+                                "Used",
                                 discount,
-                                "The promocode is invalid: it has expired."
+                                "The promocode is invalid: it has already been used by this user."
                             );
                         }
-
-                        return (
-                            true,
-                            "Valid",
-                            discount,
-                            "The promocode is valid."
-                        );
                     }
+
+                    return (
+                        true,
+                        "Valid",
+                        discount,
+                        "The promocode is valid."
+                    );
                 }
             }
         }
