@@ -97,7 +97,7 @@ namespace AutoSellerUltra.AutoWindow
             if (result == true)
             {
                 OnPromoCodeChanged();
-                UserSession.SetPromoDiscount(0);
+                UserSession.SetPromoDiscount(0, null);
             }
         }
 

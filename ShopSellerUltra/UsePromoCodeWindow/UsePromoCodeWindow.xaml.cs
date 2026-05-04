@@ -37,7 +37,7 @@ namespace AutoSellerUltra.UsePromoCodeWindow
                         $"Discount: {result.Discount}%"
                     );
 
-                    UserSession.SetPromoDiscount(result.Discount);
+                    UserSession.SetPromoDiscount(result.Discount, promoCode);
                     DialogResult = true;
                     Close();
                 }

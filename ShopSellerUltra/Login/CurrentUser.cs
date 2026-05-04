@@ -24,7 +24,7 @@ namespace AutoSellerUltra.Login
             return CurrentUser;
         }
 
-        public static void SetPromoDiscount(int discount)
+        public static void SetPromoDiscount(int discount, string promocode)
         {
             if (CurrentUser == null)
             {
@@ -32,7 +32,8 @@ namespace AutoSellerUltra.Login
             }
 
             CurrentUser.PromoDiscount = discount;
-            SessionChanged?.Invoke();
+            CurrentUser.Promocode = promocode;
+           SessionChanged?.Invoke();
         }
 
         public static bool IsUserLogin { get; set; }
