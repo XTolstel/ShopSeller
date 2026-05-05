@@ -9,7 +9,7 @@ This is my student project built to practice **C#** and modern **.NET frameworks
 This repository contains two parts:
 
 - **ShopSellerUltra** — a desktop car shop app built with **WPF**.
-- **Web_Registration hren** — a web app built with **ASP.NET Core (Razor Pages)** for user registration and authentication.
+- **Web_Registration** — a web app built with **ASP.NET Core (Razor Pages)** for user registration and authentication.
 
 ## Main Features
 
