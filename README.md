@@ -40,6 +40,15 @@ This repository contains two parts:
 - **HTML/CSS/JavaScript** (web frontend)
 - **Bootstrap + jQuery validation** (client-side web support)
 
+## SQL Database Usage
+
+The web part uses an SQL database as the persistent storage layer for user accounts.
+In practice, the service layer sends SQL queries through the ASP.NET Core data access stack to:
+
+- save new users during registration;
+- check whether a user with a given email/login already exists;
+- validate credentials during login.
+
 ## Interface Screenshot
 
 
