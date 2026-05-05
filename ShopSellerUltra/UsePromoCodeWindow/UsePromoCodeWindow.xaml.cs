@@ -1,6 +1,11 @@
+using System;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using Write;
+using AutoSellerUltra.Login;
 
-namespace AutoSellerUltra
+namespace AutoSellerUltra.UsePromoCodeWindow
 {
     public partial class UsePromoCodeWindow : Window
     {
@@ -11,21 +16,45 @@ namespace AutoSellerUltra
             InitializeComponent();
         }
 
-        private void ApplyButton_Click(object sender, RoutedEventArgs e)
+        private async void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             string promoCode = PromoCodeTextBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(promoCode))
             {
-                ErrorTextBlock.Text = "Write promocode.";
-                ErrorTextBlock.Visibility = Visibility.Visible;
+                MessageBox.Show("Please enter a promocode.");
                 return;
             }
 
-            PromoCode = promoCode;
+            try
+            {
+                int userId = UserSession.CurrentUser?.Id ?? 0;
+                var result = await Write.WriteDBPromo.CheckPromocodeAsync(promoCode, userId);
 
-            DialogResult = true;
-            Close();
+                if (result.IsValid)
+                {
+                    MessageBox.Show(
+                        $"Promocode status: {result.State}\n" +
+                        $"Discount: {result.Discount}%"
+                    );
+
+                    UserSession.SetPromoDiscount(result.Discount, promoCode);
+                    DialogResult = true;
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"{result.Message}\n" +
+                        $"Status: {result.State}\n" +
+                        $"Discount: {result.Discount}%"
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while checking the promocode: " + ex.Message);
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

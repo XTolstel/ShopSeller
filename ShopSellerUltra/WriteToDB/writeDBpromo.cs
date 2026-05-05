@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
 using MySql.Data.MySqlClient;
@@ -73,7 +74,100 @@ namespace Write
                 }
             });
         }
+        
 
+        public static async Task<(bool IsValid, string State, int Discount, string Message)> CheckPromocodeAsync(string promoCode, int userId)
+        {
+            if (userId <= 0)
+            {
+                return (
+                    false,
+                    "Invalid",
+                    0,
+                    "The promocode cannot be checked: invalid user."
+                );
+            }
+
+            string sql = @"
+                SELECT 
+                    id,
+                    code,
+                    discount,
+                    expiration_date
+                FROM Promocodes
+                WHERE code = @code
+                LIMIT 1;
+                ";
+            connectionString = WriteDB.GetConnectionString();
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@code", promoCode);
+                    int discount;
+                    DateTime expirationDate;
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!await reader.ReadAsync())
+                        {
+                            return (
+                                false,
+                                "Invalid",
+                                0,
+                                "The promocode is invalid: this promocode does not exist."
+                            );
+                        }
+
+                        discount = reader.GetInt32("discount");
+                        expirationDate = reader.GetDateTime("expiration_date");
+                    }
+
+                    if (expirationDate < DateTime.Now)
+                    {
+                        return (
+                            false,
+                            "Invalid",
+                            discount,
+                            "The promocode is invalid: it has expired."
+                        );
+                    }
+
+                    string usedPromoSql = @"
+                        SELECT 1
+                        FROM Used_Promocodes
+                        WHERE user_id = @userId AND promocode = @code
+                        LIMIT 1;";
+
+                    using (var usedPromoCmd = new MySqlCommand(usedPromoSql, conn))
+                    {
+                        usedPromoCmd.Parameters.AddWithValue("@userId", userId);
+                        usedPromoCmd.Parameters.AddWithValue("@code", promoCode);
+
+                        var usedPromoResult = await usedPromoCmd.ExecuteScalarAsync();
+                        if (usedPromoResult != null)
+                        {
+                            return (
+                                false,
+                                "Used",
+                                discount,
+                                "The promocode is invalid: it has already been used by this user."
+                            );
+                        }
+                    }
+
+                    return (
+                        true,
+                        "Valid",
+                        discount,
+                        "The promocode is valid."
+                    );
+                }
+            }
+        }
 
         public static async Task<int> DeleteUsedPromo(int[] promoIds)
         {
@@ -88,7 +182,7 @@ namespace Write
                 {
                     string sql = @"
                         DELETE FROM Used_Promocodes
-                        WHERE promocode_id = @promoId";
+                        WHERE promocode = (SELECT code FROM Promocodes WHERE id = @promoId LIMIT 1)";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
@@ -101,6 +195,31 @@ namespace Write
             return deletedRows;
         }
 
+        public static async Task SaveUsedPromocodeAsync(int userId, string promoCode)
+        {
+            if (userId <= 0 || string.IsNullOrWhiteSpace(promoCode))
+            {
+                return;
+            }
+
+            connectionString = WriteDB.GetConnectionString();
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+
+                string sql = @"
+                    INSERT INTO Used_Promocodes (user_id, promocode)
+                    VALUES (@userId, @code);";
+
+                using (var cmd = new MySqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@code", promoCode);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+        }
 
         public static void AddPromocode(string code, int discount, DateTime expirationDate)
         {
@@ -138,5 +257,8 @@ namespace Write
                 }
             }
         }
+        
+
+        
     }
 }

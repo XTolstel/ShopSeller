@@ -23,6 +23,19 @@ namespace AutoSellerUltra.Login
         {
             return CurrentUser;
         }
+
+        public static void SetPromoDiscount(int discount, string promocode)
+        {
+            if (CurrentUser == null)
+            {
+                return;
+            }
+
+            CurrentUser.PromoDiscount = discount;
+            CurrentUser.Promocode = promocode;
+           SessionChanged?.Invoke();
+        }
+
         public static bool IsUserLogin { get; set; }
     
         public static bool getIsUser()

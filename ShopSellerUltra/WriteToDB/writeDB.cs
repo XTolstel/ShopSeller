@@ -22,6 +22,8 @@ namespace Write
         public string Category { get; set; }
 
         public int Price { get; set; }
+        public int? NewPrice { get; set; }
+        public bool HasDiscount => NewPrice.HasValue && NewPrice.Value < Price;
         public int Quantity { get; set; }
 
         public byte[]? ImageBytes { get; set; }

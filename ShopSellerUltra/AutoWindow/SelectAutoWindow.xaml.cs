@@ -53,6 +53,7 @@ namespace AutoSellerUltra.AutoWindow
 
 
             _allCars = WriteDB.LoadCarsFromDb();
+            ApplyPromoToPrices();
 
             CarsItemsControl.ItemsSource = _allCars;
 
@@ -86,14 +87,50 @@ namespace AutoSellerUltra.AutoWindow
 
         private void UsePromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
-            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow
+            var UsePromoCodeWindow = new AutoSellerUltra.UsePromoCodeWindow.UsePromoCodeWindow
             {
                 Owner = this
             };
 
-            UsePromoCodeWindow.ShowDialog();
+            bool? result = UsePromoCodeWindow.ShowDialog();
+
+            if (result == true)
+            {
+                OnPromoCodeChanged();
+                
+            }
         }
 
+        private void OnPromoCodeChanged()
+        {
+            ApplyPromoToPrices();
+            CarsItemsControl.Items.Refresh();
+            CartListBox.Items.Refresh();
+            UpdateTotal();
+            
+        }
+
+        private static int GetEffectivePrice(Auto auto)
+        {
+            return auto.NewPrice ?? auto.Price;
+        }
+
+        private static void ApplyPromoToPrices()
+        {
+            int discount = UserSession.CurrentUser?.PromoDiscount ?? 0;
+            foreach (var car in _allCars)
+            {
+                if (discount > 0)
+                {
+                    int discountedPrice = car.Price - (car.Price * discount / 100);
+                    car.NewPrice = discountedPrice;
+                }
+                else
+                {
+                    car.NewPrice = null;
+                }
+            }
+        }
 
         private void AddPromoCodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -174,7 +211,7 @@ namespace AutoSellerUltra.AutoWindow
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             _allCars = WriteDB.LoadCarsFromDb();
-         
+            ApplyPromoToPrices();
             CarsItemsControl.ItemsSource = _allCars;
         }
 
@@ -202,12 +239,16 @@ namespace AutoSellerUltra.AutoWindow
 
         private int UpdateTotal()
         {
-            // Если Price у тебя int:
-            var total = Cart_cars.Sum(a => a.Price*CartCounts[a.Id]);
+            var total = Cart_cars.Sum(a => GetEffectivePrice(a) * CartCounts[a.Id]);
 
             TotalTextBlock.Text = $"Total: ${total}";
             return total;
         }
+
+        
+
+
+        
 
         private void RemoveFromCart_Click(object sender, RoutedEventArgs e)
         {
@@ -269,6 +310,14 @@ namespace AutoSellerUltra.AutoWindow
             CartCounts.Clear();
             CartListBox.Items.Refresh(); // 👈 обновляем UI
             UpdateTotal();
+            
+
+            if (UserSession.CurrentUser.PromoDiscount != 0 && !string.IsNullOrWhiteSpace(UserSession.CurrentUser.Promocode))
+            {
+                Write.WriteDBPromo.SaveUsedPromocodeAsync(UserSession.CurrentUser.Id,UserSession.CurrentUser.Promocode);
+                UserSession.SetPromoDiscount(0, null);
+            }
+            RefreshButton_Click(null, null);
             //MessageBox.Show("Your buy is successfully complete");
         }
 
