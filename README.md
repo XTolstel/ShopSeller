@@ -21,10 +21,11 @@ This repository contains two parts:
 - Add items to cart and view total price.
 - Clear the cart or complete a purchase flow.
 - Open login/registration windows for user actions.
+- Use promo codes that are stored in the database and have an expiration date
 
 ### Web app (ASP.NET Core)
 
-- User registration form with validation.
+- User registration form with email verification.
 - User login endpoint/workflow.
 - Basic API-style response models for auth operations.
 - Service layer for database write/check logic.
