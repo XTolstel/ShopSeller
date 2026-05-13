@@ -1,4 +1,4 @@
-# ShopSeller
+# AutoSeller
 
 Hi! 👋
 
